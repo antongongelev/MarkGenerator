@@ -55,13 +55,6 @@ h1 {
     font-weight: 600;
 }
 
-h2 {
-    color: red;
-    font-size: 1.65rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 1px solid #eaecef;
-}
-
 h3 {
     font-size: 1.35rem;
 }
@@ -405,9 +398,6 @@ h3 {
     border-bottom: 2px solid #3eaf7c;
 }
 
-
-
-
     </style>
 </head>
 <body>
@@ -415,48 +405,44 @@ h3 {
 <div class="container" id="app">
     <div class="card">
         <div>
-<!--            <h1 v-if="notes.length === notesDone">{{relaxMessage}}</h1>-->
-            <h1> {{title}} </h1>
+            <h2> {{title}} </h2>
         </div>
-<!--        <div class="form-control">-->
-<!--            <input-->
-<!--                    type="text"-->
-<!--                    v-bind:placeholder="placeholderString"-->
-<!--                    v-on:input="inputChangeHandler"-->
-<!--                    v-bind:value="inputValue"-->
-<!--                    v-on:keypress.enter="addNewNote">-->
-<!--        </div>-->
+    </div>
+    <div class="card" v-if="generatedMark.length !== 0">
+        <div>
+            <h2> {{resultHint}} </h2>
+        </div>
+        <div>
+            <h4> {{generatedMark}} </h4>
+        </div>
+
     </div>
     <div class="card">
-        <h1> {{barcodeHint}} </h1>
+        <h3> {{barcodeHint}} </h3>
         <div class="form-control">
                     <input
                             type="text"
                             v-on:input="inputChangeHandler"
                             v-bind:value="barcode">
                 </div>
-        <!--            <h1 v-if="notes.length === notesDone">{{relaxMessage}}</h1>-->
-        <p> {{generatedMark}} </p>
     </div>
-    <div class="card">
-        <ul class="list" v-if="countries.length !== 0">
+    <div class="card" v-if="countries.length !== 0">
+        <h3> {{countryHint}} </h3>
+        <ul class="list" >
             <li class="list-item" v-for="(country, idx) in countries" v-bind:class="{green: country == selectedCountry}"
                 v-on:click="selectCountry(country)">
-<!--                @contextmenu="removeNote($event, note.id)">-->
                 {{country}}
             </li>
         </ul>
-<!--        <h3 v-else>{{noTasksMessage}}</h3>-->
     </div>
-    <div class="card">
-        <ul class="list" v-if="markTypes.length !== 0">
+    <div class="card" v-if="markTypes.length !== 0">
+        <h3> {{markTypeHint}} </h3>
+        <ul class="list">
             <li class="list-item" v-for="(markType, idx) in markTypes" v-bind:class="{green: markType == selectedMarkType}"
                 v-on:click="selectMarkType(markType)">
-                <!--                @contextmenu="removeNote($event, note.id)">-->
                 {{markType}}
             </li>
         </ul>
-        <!--        <h3 v-else>{{noTasksMessage}}</h3>-->
     </div>
 </div>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -465,8 +451,11 @@ h3 {
      const App = {
      data() {
          return{
-            barcode: "123456",
+            barcode: "штрих-код",
+            resultHint: "Результат: ",
             barcodeHint: "ШК товара:",
+            countryHint: "Страна:",
+            markTypeHint: "Тип маркировки:",
             title: "Введите ШК товара, страну и тип маркировки:",
             selectedCountry: "",
             selectedMarkType: "",
@@ -474,17 +463,15 @@ h3 {
             country: "",
             countries: [],
             markTypes: []
-<!--            date: "25.09.1993",-->
-<!--            placeholderString: "Fill your task...",-->
-<!--            inputValue: "",-->
-<!--            notes: [],-->
-<!--            noTasksMessage: "You have no tasks to complete",-->
-<!--            relaxMessage: "All tasks are completed - take a rest..."-->
          }
      },
      methods: {
            inputChangeHandler(event) {
                this.barcode = event.target.value
+               this.selectedCountry = ""
+                this.selectedMarkType = ""
+                this.generatedMark = ""
+                this.markTypes = []
            },
            addNewNote() {
                if (this.inputValue.trim() != "") {
@@ -494,6 +481,8 @@ h3 {
            },
            selectCountry(country) {
             this.selectedCountry = country
+            this.selectedMarkType = ""
+            this.generatedMark = ""
             this.loadMarkTypesForCountry(country)
            },
            selectMarkType(markType) {
@@ -546,17 +535,12 @@ h3 {
         }
     },
     created: function () {
-<!--        this.getAllNotes()-->
         this.getCountries()
     }
 
  }
 
  const app = Vue.createApp(App).mount('#app')
-
-
-
-
 
 </script>
 </body>
