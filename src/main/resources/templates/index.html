@@ -91,6 +91,10 @@ h3 {
     background-color: lightgreen;
 }
 
+.red {
+    color: #c43a1b;
+}
+
 .date-btn {
     display: flex;
     justify-content: center;
@@ -410,12 +414,13 @@ h3 {
     </div>
     <div class="card" v-if="generatedMark.length !== 0">
         <div>
-            <h2> {{resultHint}} </h2>
+            <h2>  {{resultHint}} </h2>
         </div>
         <div>
-            <h4> {{generatedMark}} </h4>
+            <h4 v-bind:class="{red: generatedMark === barcodeIsTooLong}"> {{generatedMark}} </h4>
+            <button v-on:click="copyToClickBoard()" v-if="!isCopied && generatedMark !== barcodeIsTooLong" class="btn">Скопировать</button>
+            <h4 v-if="isCopied && generatedMark !== barcodeIsTooLong">Марка скопирована</h4>
         </div>
-
     </div>
     <div class="card">
         <h3> {{barcodeHint}} </h3>
@@ -451,12 +456,14 @@ h3 {
      const App = {
      data() {
          return{
+            isCopied: false,
             barcode: "штрих-код",
             resultHint: "Результат: ",
             barcodeHint: "ШК товара:",
             countryHint: "Страна:",
             markTypeHint: "Тип маркировки:",
             title: "Введите ШК товара, страну и тип маркировки:",
+            barcodeIsTooLong: "ШК товара слишком длинный",
             selectedCountry: "",
             selectedMarkType: "",
             generatedMark: "",
@@ -471,22 +478,33 @@ h3 {
                this.selectedCountry = ""
                 this.selectedMarkType = ""
                 this.generatedMark = ""
+                this.isCopied = false
                 this.markTypes = []
            },
-           addNewNote() {
-               if (this.inputValue.trim() != "") {
-               axios.post('/todo/', {title: this.inputValue}).then(r => {
-               this.getAllNotes()})}
-               this.inputValue = ""
+           copyToClickBoard() {
+                const textArea = document.createElement("textarea");
+                  textArea.value = this.generatedMark;
+                  document.body.appendChild(textArea);
+                  textArea.select();
+                  try {
+                    document.execCommand('copy');
+                    this.isCopied = true
+                  } catch (err) {
+                    console.error('Unable to copy to clipboard', err);
+                    this.isCopied = false
+                  }
+                  document.body.removeChild(textArea);
            },
            selectCountry(country) {
             this.selectedCountry = country
             this.selectedMarkType = ""
             this.generatedMark = ""
+            this.isCopied = false
             this.loadMarkTypesForCountry(country)
            },
            selectMarkType(markType) {
             this.selectedMarkType = markType
+            this.isCopied = false
             this.generateMark()
            },
            loadMarkTypesForCountry(country) {
@@ -503,36 +521,11 @@ h3 {
                 this.generatedMark = r.data
            })
            },
-           removeNote(e, id) {
-           e.preventDefault();
-                console.log('removing todo with id ' + id)
-               axios.post('/todo/' + id, {}).then(r => {
-               this.getAllNotes()})
-           },
-           toggleDone(id) {
-                const note = this.notes.filter(n => (n.id === id))[0]
-                const isDone = note.isDone
-                axios.put('/todo/', {...note, isDone: !isDone}).then(r => {
-               this.getAllNotes()})
-           },
-           getAllNotes() {
-           axios.get('/todo/').then(response => {
-            this.notes = response.data.sort((a,b) => b.id - a.id)
-            })
-           },
            getCountries() {
             axios.get('/generate/countries/').then(response => {
             this.countries = response.data
             })
            }
-    },
-    computed: {
-        notesDone() {
-            return this.notes.filter(n => n.isDone).length
-        },
-        notesTotal() {
-            return this.notes.length
-        }
     },
     created: function () {
         this.getCountries()
