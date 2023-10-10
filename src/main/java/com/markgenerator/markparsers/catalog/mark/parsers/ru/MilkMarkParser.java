@@ -19,6 +19,7 @@ public class MilkMarkParser extends AbstractMarkParser {
             "01(?<" + GTIN + ">\\d{14})" +
             "21(?<" + SERIAL + ">\\S{6})" +
             "93(?<" + VERIFICATION_KEY + ">\\S{4})" +
+            "(3103(?<" + WEIGHT + ">\\d{6}))?" +
             "$");
 
     @Override

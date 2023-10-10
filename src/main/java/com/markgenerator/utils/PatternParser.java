@@ -17,6 +17,7 @@ public class PatternParser {
                       .replace("?<checkCode>", StringUtils.EMPTY)
                       .replace("?<gtinPrefix>", StringUtils.EMPTY)
                       .replace("?<verificationKey>", StringUtils.EMPTY)
+                      .replace("?<weight>", StringUtils.EMPTY)
                       .replace("?<verificationCode>", StringUtils.EMPTY);
     }
 

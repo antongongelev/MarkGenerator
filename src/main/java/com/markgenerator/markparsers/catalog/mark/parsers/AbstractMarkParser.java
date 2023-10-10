@@ -19,6 +19,7 @@ public abstract class AbstractMarkParser implements MarkParser {
     protected static final String AI_SERIAL_NUMBER_CODE = "21";
     protected static final String GTIN = "gtin";
     protected static final String SERIAL = "serial";
+    protected static final String WEIGHT = "weight";
     protected static final String VERIFICATION_KEY = "verificationKey";
     protected static final String VERIFICATION_CODE = "verificationCode";
 
